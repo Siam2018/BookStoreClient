@@ -1,9 +1,11 @@
-
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function Login() {
+function LoginForm() {
+  const router = useRouter();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,13 +22,22 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:3000/auth/login", { identifier, password });
-      // Save token, update UI, or redirect as needed
+      const res = await axios.post(
+        "http://localhost:3000/auth/login",
+        { identifier, password },
+        { withCredentials: true }
+      );
       setSuccess(true);
       setError("");
-      // Example: localStorage.setItem('token', res.data.access_token);
+      setTimeout(() => router.push("/"), 800);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed.");
+      if (err.response?.status === 401) {
+        setError("Invalid credentials. Please check your email/username and password.");
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Login failed. Please try again later.");
+      }
     }
     setLoading(false);
   };
@@ -58,9 +69,16 @@ export default function Login() {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-        {error && <div className="text-red-500 text-sm">{error}</div>}
-        {success && <div className="text-green-600 text-sm">Login successful!</div>}
+  {error && <div className="text-red-500 text-sm" role="alert">{error}</div>}
+  {success && <div className="text-green-600 text-sm">Login successful! Redirecting...</div>}
       </form>
+      <div className="mt-4 text-sm text-gray-600">
+        Don't have an account? <Link href="/register" className="text-blue-600 hover:underline">Register</Link>
+      </div>
     </main>
   );
+}
+
+export default function Login() {
+  return <LoginForm />;
 }
