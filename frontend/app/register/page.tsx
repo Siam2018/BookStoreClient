@@ -63,7 +63,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await axios.post("http://localhost:3000/customer/addcustomer", {
+  await axios.post(`${process.env.BACKEND_ORIGIN}/customer/addcustomer`, {
         fullName,
         email,
         password,

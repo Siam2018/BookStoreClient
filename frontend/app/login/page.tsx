@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Footer from "../../components/Footer";
 
 function LoginForm() {
   const router = useRouter();
@@ -23,7 +24,7 @@ function LoginForm() {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:3000/auth/login",
+        `${process.env.BACKEND_ORIGIN}/auth/login`,
         { identifier, password },
         { withCredentials: true }
       );
@@ -80,5 +81,10 @@ function LoginForm() {
 }
 
 export default function Login() {
-  return <LoginForm />;
+  return (
+    <>
+      <LoginForm />
+      <Footer />
+    </>
+  );
 }
