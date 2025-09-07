@@ -16,7 +16,7 @@ export default function ProductSection() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-  const res = await axios.get(`${process.env.BACKEND_ORIGIN}/products`);
+  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products`);
       setProducts(res.data.data || []);
       setError(null);
     } catch (err: any) {
@@ -31,7 +31,7 @@ export default function ProductSection() {
 
   // Add Product (POST)
   const handleAddProduct = async (productData: any) => {
-  await axios.post(`${process.env.BACKEND_ORIGIN}/products`, productData);
+  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products`, productData);
     fetchProducts();
     setShowForm(false);
   };
@@ -39,7 +39,7 @@ export default function ProductSection() {
   // Edit Product (PUT)
   const handleEditProduct = async (productData: any) => {
     if (!editProduct) return;
-  await axios.put(`${process.env.BACKEND_ORIGIN}/products/${editProduct.id}`, productData);
+  await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products/${editProduct.id}`, productData);
     fetchProducts();
     setEditProduct(null);
     setShowForm(false);
@@ -47,13 +47,13 @@ export default function ProductSection() {
 
   // Delete Product (DELETE)
   const handleDeleteProduct = async (id: number) => {
-  await axios.delete(`${process.env.BACKEND_ORIGIN}/products/${id}`);
+  await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products/${id}`);
     fetchProducts();
   };
 
   // Patch Product (PATCH)
   const handlePatchProduct = async (id: number, patchData: any) => {
-  await axios.patch(`${process.env.BACKEND_ORIGIN}/products/${id}`, patchData);
+  await axios.patch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products/${id}`, patchData);
     fetchProducts();
   };
 
@@ -79,7 +79,7 @@ export default function ProductSection() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
         {products.map((product: any) => (
           <div key={product.id} className="border rounded-lg p-4 shadow hover:shadow-lg transition flex flex-col">
-            <img src={product.imageURL || "/placeholder.png"} alt={product.name} className="w-full h-40 object-cover mb-2 rounded" />
+            <img src={product.imageURL || "/bookplaceholder.svg"} alt={product.name} className="w-full h-50 object-cover mb-2 rounded" />
             <h4 className="font-semibold text-lg mb-2">{product.name || product.title}</h4>
             <p className="text-sm mb-2">{product.author}</p>
             <p className="text-xs text-gray-500">{product.description}</p>

@@ -12,7 +12,7 @@ const ProductDetails = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-  axios.get(`${process.env.BACKEND_ORIGIN}/products/${id}`)
+  axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products/${id}`)
       .then(res => {
         setProduct(res.data.data);
         setError(null);

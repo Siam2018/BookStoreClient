@@ -8,7 +8,7 @@ export default function Products() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-  axios.get(`${process.env.BACKEND_ORIGIN}/products`)
+  axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products`)
       .then(res => {
         setProducts(res.data);
         setLoading(false);

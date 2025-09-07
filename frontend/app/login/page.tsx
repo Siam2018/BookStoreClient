@@ -24,7 +24,7 @@ function LoginForm() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${process.env.BACKEND_ORIGIN}/auth/login`,
+        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/login`,
         { identifier, password },
         { withCredentials: true }
       );
