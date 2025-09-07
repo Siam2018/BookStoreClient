@@ -16,7 +16,7 @@ export default function ProductSection() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/products");
+  const res = await axios.get(`${process.env.BACKEND_ORIGIN}/products`);
       setProducts(res.data.data || []);
       setError(null);
     } catch (err: any) {
@@ -31,7 +31,7 @@ export default function ProductSection() {
 
   // Add Product (POST)
   const handleAddProduct = async (productData: any) => {
-    await axios.post("http://localhost:3000/products", productData);
+  await axios.post(`${process.env.BACKEND_ORIGIN}/products`, productData);
     fetchProducts();
     setShowForm(false);
   };
@@ -39,7 +39,7 @@ export default function ProductSection() {
   // Edit Product (PUT)
   const handleEditProduct = async (productData: any) => {
     if (!editProduct) return;
-    await axios.put(`http://localhost:3000/products/${editProduct.id}`, productData);
+  await axios.put(`${process.env.BACKEND_ORIGIN}/products/${editProduct.id}`, productData);
     fetchProducts();
     setEditProduct(null);
     setShowForm(false);
@@ -47,13 +47,13 @@ export default function ProductSection() {
 
   // Delete Product (DELETE)
   const handleDeleteProduct = async (id: number) => {
-    await axios.delete(`http://localhost:3000/products/${id}`);
+  await axios.delete(`${process.env.BACKEND_ORIGIN}/products/${id}`);
     fetchProducts();
   };
 
   // Patch Product (PATCH)
   const handlePatchProduct = async (id: number, patchData: any) => {
-    await axios.patch(`http://localhost:3000/products/${id}`, patchData);
+  await axios.patch(`${process.env.BACKEND_ORIGIN}/products/${id}`, patchData);
     fetchProducts();
   };
 

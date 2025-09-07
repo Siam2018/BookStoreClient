@@ -1,10 +1,12 @@
 "use client";
 import Link from "next/link";
 import React from 'react';
-import { useAuth } from "../context/AuthContext";
 
-export default function Navbar() {
-  const { user, loading, logout } = useAuth();
+export default function Navbar({ user, loading, onLogout }: {
+  user: any;
+  loading: boolean;
+  onLogout: () => void;
+}) {
   return (
     <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
       <h1 className="text-2xl font-bold">BookStore</h1>
@@ -30,7 +32,7 @@ export default function Navbar() {
               <img src={user.imageURL || "/placeholder-profile.png"} alt="Profile" className="w-8 h-8 rounded-full border" />
               <span>{user.fullName || "Profile"}</span>
             </Link>
-            <button onClick={logout} className="px-4 py-2 rounded bg-red-500 hover:bg-red-600">Logout</button>
+            <button onClick={onLogout} className="px-4 py-2 rounded bg-red-500 hover:bg-red-600">Logout</button>
           </>
         )}
       </div>

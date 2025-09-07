@@ -1,20 +1,39 @@
-
-
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import ProductSection from "../components/ProductSection";
-import Link from "next/link";
+import Footer from "../components/Footer";
 
 export default function HomePage() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+  const res = await axios.get(`${process.env.BACKEND_ORIGIN}/auth/me`, { withCredentials: true });
+        setUser(res.data);
+      } catch {
+        setUser(null);
+      }
+      setLoading(false);
+    }
+    fetchUser();
+  }, []);
+
+  const handleLogout = async () => {
+  await axios.post(`${process.env.BACKEND_ORIGIN}/auth/logout`, {}, { withCredentials: true });
+    setUser(null);
+  };
+
   return (
     <main>
-      <Navbar />
+      <Navbar user={user} loading={loading} onLogout={handleLogout} />
       <Hero />
       <ProductSection />
-  {/* Navigation links moved to Navbar component */}
-      <footer className="mt-8 text-center text-gray-500">
-        <span>&copy; {new Date().getFullYear()} BookStore. All rights reserved.</span>
-      </footer>
+      <Footer />
     </main>
   );
 }
