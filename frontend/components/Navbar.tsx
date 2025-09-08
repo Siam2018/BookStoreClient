@@ -8,8 +8,11 @@ export default function Navbar({ user, loading, onLogout }: {
   onLogout: () => void;
 }) {
   return (
-    <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
-      <h1 className="text-2xl font-bold">BookStore</h1>
+    <nav className="bg-blue-600 text-white p-2 flex justify-between items-center">
+      <div className="flex flex-row items-center gap-3">
+        <img src={"/logo.png"} alt="Logo" className="w-20 h-20 border bg-white rounded-2xl" />
+        <h1 className="text-2xl font-bold">BookStore</h1>
+      </div>
       <div className="flex gap-6 items-center">
         <Link href="/" className="px-4 py-2 rounded hover:bg-blue-700">Home</Link>
         <Link href="/products" className="px-4 py-2 rounded hover:bg-blue-700">Products</Link>

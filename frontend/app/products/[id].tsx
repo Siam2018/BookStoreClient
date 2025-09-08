@@ -1,10 +1,11 @@
+
+"use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 import axios from "axios";
 
-const ProductDetails = () => {
-  const router = useRouter();
-  const { id } = router.query;
+export default function ProductDetails() {
+  const { id } = useParams();
   const [product, setProduct] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,7 +13,7 @@ const ProductDetails = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-  axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products/${id}`)
+    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/products/${id}`)
       .then(res => {
         setProduct(res.data.data);
         setError(null);
@@ -35,6 +36,4 @@ const ProductDetails = () => {
       {/* Add more product details or actions here */}
     </div>
   );
-};
-
-export default ProductDetails;
+}

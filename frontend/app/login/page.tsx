@@ -45,7 +45,10 @@ function LoginForm() {
 
   return (
     <main className="max-w-md mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-4">Login</h1>
+      <div className="flex flex-col items-center mb-4">
+        <img src="/logo.png" alt="Logo" className="w-22 h-22 mb-2" />
+        <h1 className="text-3xl font-bold">Login</h1>
+      </div>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           type="text"
