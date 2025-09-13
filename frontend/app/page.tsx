@@ -11,19 +11,14 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/me`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        setUser(res.data);
-      } catch {
-        setUser(null);
-      }
-      setLoading(false);
+    // Load user from localStorage on mount
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
     }
-    fetchUser();
+    setLoading(false);
   }, []);
 
   const handleLogout = async () => {
@@ -32,6 +27,7 @@ export default function HomePage() {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
 
@@ -42,7 +38,7 @@ export default function HomePage() {
       {user && user.role === "customer" && (
         <section className="max-w-md mx-auto my-8 p-6 border rounded shadow bg-white">
           <div className="flex flex-col items-center mb-4">
-            <img src={user.imageURL || "/person.svg"} alt="Profile" className="w-20 h-20 rounded-full border mb-2" />
+            <img src={user.imageURL ? `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/customer/uploads/customers/${user.imageURL}` : "/person.svg"} alt="Profile" className="w-20 h-20 rounded-full border mb-2" />
             <h2 className="text-2xl font-bold mb-2">{user.fullName || user.username}</h2>
             <p className="text-gray-700 mb-1">Email: {user.email}</p>
             {user.phone && <p className="text-gray-700 mb-1">Phone: {user.phone}</p>}
@@ -51,6 +47,12 @@ export default function HomePage() {
             {user.country && <p className="text-gray-700 mb-1">Country: {user.country}</p>}
             {user.dateOfBirth && <p className="text-gray-700 mb-1">Date of Birth: {user.dateOfBirth}</p>}
             {user.gender && <p className="text-gray-700 mb-1">Gender: {user.gender}</p>}
+            <a
+              href={`/profile/${user.id}`}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              View Profile
+            </a>
           </div>
         </section>
       )}
