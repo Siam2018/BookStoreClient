@@ -226,10 +226,20 @@ export class CustomerService {
   // Update customer (general)
   async updateCustomer(id: number, updateData: Partial<CustomerDto>): Promise<CustomerEntity> {
     try {
+      // Hash password if present
+      if (updateData.password) {
+        const bcrypt = require('bcrypt');
+        const saltRounds = 10;
+        updateData.password = await bcrypt.hash(updateData.password, saltRounds);
+      }
       await this.customerRepository.update(id, updateData);
       const updatedCustomer = await this.customerRepository.findOneBy({ id: id });
       if (!updatedCustomer) {
         throw new (require('@nestjs/common').NotFoundException)(`Customer with ID ${id} not found after update`);
+      }
+      // Do not return password
+      if (updatedCustomer) {
+        updatedCustomer.password = '';
       }
       return updatedCustomer;
     } catch (error) {

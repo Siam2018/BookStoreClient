@@ -29,8 +29,8 @@ export class AdminController {
 
     @Public()
     @Post('/create')
-     @UseGuards(JwtAuthGuard, RolesGuard)
-     @Roles('admin')
+    //  @UseGuards(JwtAuthGuard, RolesGuard)
+    //  @Roles('admin')
     @UsePipes(new ValidationPipe())
     async create(@Body() dto: AdminDto) {
         console.log("Creating admin with data:", dto);

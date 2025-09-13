@@ -1,3 +1,5 @@
+import { join } from 'path';
+import { existsSync } from 'fs';
 import { Controller, Get, Post, Put, Delete, Param, Body, UseInterceptors, UsePipes, ValidationPipe, UploadedFile, Res, ParseIntPipe, Query, Patch, UseGuards, Req } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { MailService } from '../Mail/mail.service';
@@ -285,24 +287,34 @@ export class CustomerController {
         if (!file) {
             return { message: 'No file uploaded', status: 'error' };
         }
-        const imageURL = `/uploads/customers/${file.filename}`;
-        const updated = await this.customerService.updateCustomerImage(id, imageURL);
+        // Save only the filename in DB
+        const imageFilename = file.filename;
+        const updated = await this.customerService.updateCustomerImage(id, imageFilename);
         return {
             message: 'Customer image uploaded successfully',
             data: updated,
             status: 'success',
-            imageURL,
+            imageFilename,
         };
     }
 
-    @Get('/:id/image')
-    async getCustomerImage(@Param('id', ParseIntPipe) id: number, @Res() res) {
-        const imagePath = await this.customerService.getCustomerImagePath(id);
-        if (!imagePath) {
-            return res.status(404).json({ message: 'No image found for this customer.' });
+    @Public()
+    @Get('/image')
+    async getCustomerImage(@Query('imageURL') imageURL: string, @Res() res) {
+        if (!imageURL) {
+            return res.status(400).json({ message: 'No imageURL provided.' });
         }
         // Remove leading slash if present
-        const normalizedPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+        const normalizedPath = imageURL.startsWith('/') ? imageURL.slice(1) : imageURL;
         return res.sendFile(normalizedPath, { root: './' });
+    }
+    @Public()
+    @Get('/uploads/customers/:filename')
+    async serveCustomerImage(@Param('filename') filename: string, @Res() res) {
+        const filePath = join(process.cwd(), 'uploads', 'customers', filename);
+        if (!existsSync(filePath)) {
+            return res.status(404).json({ message: 'Image not found.' });
+        }
+        return res.sendFile(filePath);
     }
 }
