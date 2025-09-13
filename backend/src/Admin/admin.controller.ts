@@ -6,6 +6,7 @@ import { AdminService } from './admin.service';
 
 import { JwtAuthGuard } from '../Auth/jwtAuth.guard';
 import { AdminDto } from './admin.dto';
+import { Public } from 'src/Auth/public.decorator';
 
 @Controller('admin')
 export class AdminController {
@@ -26,11 +27,13 @@ export class AdminController {
     }
     constructor(private readonly adminService: AdminService) {}
 
-    @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin')
+    @Public()
+    @Post('/create')
+     @UseGuards(JwtAuthGuard, RolesGuard)
+     @Roles('admin')
     @UsePipes(new ValidationPipe())
-    async create(@Body() dto: AdminDto, @Request() req) {
+    async create(@Body() dto: AdminDto) {
+        console.log("Creating admin with data:", dto);
         return this.adminService.createAdmin(dto);
     }
 
@@ -45,7 +48,7 @@ export class AdminController {
     }
 
     @Get('username/:username')
-    @UseGuards(JwtAuthGuard, RolesGuard)
+   @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
     async findByUsername(@Param('username') username: string) {
         try {
