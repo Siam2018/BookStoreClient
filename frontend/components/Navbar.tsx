@@ -18,6 +18,7 @@ export default function Navbar({ user, loading, onLogout }: {
         <Link href="/products" className="px-4 py-2 rounded hover:bg-blue-700">Products</Link>
         <Link href="/about" className="px-4 py-2 rounded hover:bg-blue-700">About Us</Link>
         <Link href="/orders" className="px-4 py-2 rounded hover:bg-blue-700">Orders</Link>
+
       </div>
       <div className="flex gap-4 items-center">
         {loading ? (
