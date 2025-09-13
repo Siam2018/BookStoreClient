@@ -47,7 +47,13 @@ export class AuthService {
       if (!user || !user.email || !user.id || !user.role) {
         throw new (require('@nestjs/common').UnauthorizedException)('Invalid user data');
       }
-      const payload = { email: user.email, sub: user.id, role: user.role };
+      const payload = {
+        email: user.email,
+        sub: user.id,
+        role: user.role,
+        fullName: user.fullName || user.name || user.username || '',
+        imageURL: user.imageURL || '',
+      };
       return {
         access_token: this.jwtService.sign(payload),
         role: user.role,

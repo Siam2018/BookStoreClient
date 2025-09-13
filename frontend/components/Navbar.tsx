@@ -8,8 +8,11 @@ export default function Navbar({ user, loading, onLogout }: {
   onLogout: () => void;
 }) {
   return (
-    <nav className="bg-[#67C090] text-white p-4 flex justify-between items-center">
-      <h1 className="text-2xl font-bold">BookStore</h1>
+    <nav className="bg-blue-600 text-white p-2 flex justify-between items-center">
+      <div className="flex flex-row items-center gap-3">
+        <img src={"/logo.png"} alt="Logo" className="w-20 h-20 border bg-white rounded-2xl" />
+        <h1 className="text-2xl font-bold">BookStore</h1>
+      </div>
       <div className="flex gap-6 items-center">
         <Link href="/" className="px-4 py-2 rounded hover:bg-blue-700">Home</Link>
         <Link href="/products" className="px-4 py-2 rounded hover:bg-blue-700">Products</Link>
@@ -29,10 +32,17 @@ export default function Navbar({ user, loading, onLogout }: {
           <>
             <Link href="/orderItems" className="px-4 py-2 rounded hover:bg-blue-700">Cart</Link>
             <span className="px-2 py-1 bg-gray-200 text-blue-700 rounded">Role: {user.role || "User"}</span>
-            <Link href={`/profile/${user.id}`} className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-700">
-              <img src={user.imageURL || "/placeholder-profile.png"} alt="Profile" className="w-8 h-8 rounded-full border" />
-              <span>{user.fullName || "Profile"}</span>
-            </Link>
+            {user.id ? (
+              <Link href={`/profile/${user.id}`} className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-700">
+                <img src={user.imageURL || "/person.svg"} alt="Profile" className="w-8 h-8 rounded-full border" />
+                <span>{user.fullName || "Profile"}</span>
+              </Link>
+            ) : (
+              <Link href="/profile" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-700">
+                <img src={user.imageURL || "/person.svg"} alt="Profile" className="w-8 h-8 rounded-full border" />
+                <span>{user.fullName || "Profile"}</span>
+              </Link>
+            )}
             <button onClick={onLogout} className="px-4 py-2 rounded bg-red-500 hover:bg-red-600">Logout</button>
           </>
         )}
