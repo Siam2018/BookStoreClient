@@ -25,9 +25,12 @@ function LoginForm() {
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/login`,
-        { identifier, password },
-        { withCredentials: true }
+        { identifier, password }
       );
+      // Store token in localStorage
+      if (res.data.access_token) {
+        localStorage.setItem("token", res.data.access_token);
+      }
       setSuccess(true);
       setError("");
       setTimeout(() => router.push("/"), 800);

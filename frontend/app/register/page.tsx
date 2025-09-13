@@ -78,7 +78,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/customer/addcustomer`, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/customer/addcustomer`, {
         fullName,
         email,
         password,
@@ -90,6 +90,10 @@ export default function Register() {
         dateOfBirth: dateOfBirth || null,
         gender
       });
+      // If backend returns token, store it
+      if (res.data.access_token) {
+        localStorage.setItem("token", res.data.access_token);
+      }
       setSuccess(true);
       setFormError("");
     } catch (err: any) {
