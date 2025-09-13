@@ -17,6 +17,7 @@ export class AuthController {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
     const loginResult = await this.authService.login(user);
+
     const { password, ...userInfo } = user;
     return { access_token: loginResult.access_token, role: loginResult.role, user: userInfo };
   }

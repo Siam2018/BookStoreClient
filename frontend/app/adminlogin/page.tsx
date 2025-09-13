@@ -1,11 +1,13 @@
 "use client";
 import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,7 +23,10 @@ export default function AdminLoginPage() {
       if (!res.ok) {
         setError("Invalid username or password");
       } else {
-        // Handle successful login (redirect, set token, etc.)
+        const data = await res.json();
+        localStorage.setItem("isAdminLoggedIn", "true");
+        localStorage.setItem("jwtToken", data.token);
+        router.push("/manage");
       }
     } catch {
       setError("Login failed. Please try again.");
