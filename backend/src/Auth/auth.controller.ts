@@ -10,20 +10,15 @@ export class AuthController {
 
   @Public()
   @Post('logout')
-  async logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('token', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-    });
+  async logout() {
+    // For Bearer token, logout is handled on frontend by removing token from storage
     return { message: 'Logged out successfully' };
   }
 
   @Public()
   @Post('login')
   async login(
-    @Body() body: { identifier: string; password: string },
-    @Res({ passthrough: true }) res: Response
+    @Body() body: { identifier: string; password: string }
   ) {
     // identifier can be email (customer or admin) or username (admin)
     const user = await this.authService.validateUser(body.identifier, body.password);
@@ -31,33 +26,17 @@ export class AuthController {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
     const loginResult = await this.authService.login(user);
-    console.log('Login successful, setting cookie:', {
-      token: loginResult.access_token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
-    res.cookie('token', loginResult.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 1 week
-    });
-    console.log('Cookie set, response headers:', res.getHeaders());
-    return { role: loginResult.role };
+    // Return token and role in response body
+    return { access_token: loginResult.access_token, role: loginResult.role };
   }
 
   @Public()
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getMe(@Request() req, @Res() res: Response) {
+  async getMe(@Request() req) {
     try {
-      console.log('AuthController /auth/me: req.cookies:', req.cookies);
-      console.log('AuthController /auth/me: req.user:', req.user);
       if (!req.user) {
-        console.error('No user found in request');
-        return res.status(401).json({ error: 'Unauthorized: No user found' });
+        return { error: 'Unauthorized: No user found' };
       }
       const userInfo = {
         id: req.user?.id || req.user?.userId,
@@ -79,11 +58,9 @@ export class AuthController {
         updatedAt: req.user?.updatedAt,
         username: req.user?.username,
       };
-      console.log('Returning user info:', userInfo);
-      return res.json(userInfo);
+      return userInfo;
     } catch (err) {
-      console.error('Error in /auth/me:', err);
-      return res.status(500).json({ error: 'Internal server error' });
+      return { error: 'Internal server error' };
     }
   }
 }
