@@ -13,57 +13,72 @@ export default function Register() {
   const [country, setCountry] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState("");
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    phone: "",
+    address: "",
+    city: "",
+    postalCode: "",
+    country: "",
+    dateOfBirth: "",
+    gender: ""
+  });
+  const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setFieldErrors({
+      fullName: "",
+      email: "",
+      password: "",
+      phone: "",
+      address: "",
+      city: "",
+      postalCode: "",
+      country: "",
+      dateOfBirth: "",
+      gender: ""
+    });
+    setFormError("");
     setSuccess(false);
     // Advanced validation
     const nameRegex = /^[A-Za-z\s]+$/;
     const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     const phoneRegex = /^\+?[0-9\s-]{7,15}$/;
-    if (!fullName || !email || !password) {
-      setError("Full Name, Email, and Password are required.");
-      return;
-    }
-    if (!nameRegex.test(fullName)) {
-      setError("Full Name must contain only letters and spaces.");
-      return;
-    }
-    if (!emailRegex.test(email)) {
-      setError("Invalid email format.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    if (!/[#@\$&]/.test(password)) {
-      setError("Password must contain one special character (@, #, $ or &).");
-      return;
-    }
-    if (phone && !phoneRegex.test(phone)) {
-      setError("Phone number is invalid.");
-      return;
-    }
+    let errors: any = {};
+    let requiredFields = false;
+    if (!fullName) { errors.fullName = "Full Name is required."; requiredFields = true; }
+    else if (!nameRegex.test(fullName)) errors.fullName = "Full Name must contain only letters and spaces.";
+    if (!email) { errors.email = "Email is required."; requiredFields = true; }
+    else if (!emailRegex.test(email)) errors.email = "Invalid email format.";
+    if (!password) { errors.password = "Password is required."; requiredFields = true; }
+    else if (password.length < 6) errors.password = "Password must be at least 6 characters.";
+    else if (!/[#@\$&]/.test(password)) errors.password = "Password must contain one special character (@, #, $ or &).";
+    if (phone && !phoneRegex.test(phone)) errors.phone = "Phone number is invalid.";
     if (dateOfBirth) {
       const dob = new Date(dateOfBirth);
-      if (isNaN(dob.getTime())) {
-        setError("Date of Birth must be a valid date.");
-        return;
+      if (isNaN(dob.getTime())) errors.dateOfBirth = "Date of Birth must be a valid date.";
+      else {
+        const age = Math.floor((Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        if (age < 0 || age > 120) errors.dateOfBirth = "Age must be a valid number between 0 and 120.";
       }
-      const age = Math.floor((Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-      if (age < 0 || age > 120) {
-        setError("Age must be a valid number between 0 and 120.");
-        return;
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors((prev: any) => ({ ...prev, ...errors }));
+      if (requiredFields) {
+        setFormError("");
+      } else {
+        setFormError("Please fix the errors above.");
       }
+      return;
     }
     setLoading(true);
     try {
-  await axios.post(`${process.env.BACKEND_ORIGIN}/customer/addcustomer`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/customer/addcustomer`, {
         fullName,
         email,
         password,
@@ -76,12 +91,12 @@ export default function Register() {
         gender
       });
       setSuccess(true);
-      setError("");
+      setFormError("");
     } catch (err: any) {
       if (err.response?.data?.message?.toLowerCase().includes('email') && err.response?.data?.message?.toLowerCase().includes('exist')) {
-        setError('This email is already registered. Please use a different email.');
+        setFieldErrors((prev: any) => ({ ...prev, email: 'This email is already registered. Please use a different email.' }));
       } else {
-        setError(err.response?.data?.message || "Registration failed.");
+        setFormError(err.response?.data?.message || "Registration failed.");
       }
     }
     setLoading(false);
@@ -89,7 +104,10 @@ export default function Register() {
 
   return (
     <main className="max-w-md mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-4">Register</h1>
+      <div className="flex flex-col items-center mb-4">
+        <img src="/logo.png" alt="Logo" className="w-22 h-22 mb-2" />
+        <h1 className="text-3xl font-bold">Register</h1>
+      </div>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <label className="text-sm font-medium">Full Name*</label>
         <input
@@ -100,6 +118,7 @@ export default function Register() {
           value={fullName}
           onChange={e => setFullName(e.target.value)}
         />
+        {fieldErrors.fullName && <div className="text-red-500 text-xs">{fieldErrors.fullName}</div>}
         <label className="text-sm font-medium">Email*</label>
         <input
           type="email"
@@ -109,6 +128,7 @@ export default function Register() {
           value={email}
           onChange={e => setEmail(e.target.value)}
         />
+        {fieldErrors.email && <div className="text-red-500 text-xs">{fieldErrors.email}</div>}
         <label className="text-sm font-medium">Password*</label>
         <input
           type="password"
@@ -118,6 +138,7 @@ export default function Register() {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
+        {fieldErrors.password && <div className="text-red-500 text-xs">{fieldErrors.password}</div>}
         <label className="text-sm font-medium">Phone</label>
         <input
           type="tel"
@@ -127,6 +148,7 @@ export default function Register() {
           value={phone}
           onChange={e => setPhone(e.target.value)}
         />
+        {fieldErrors.phone && <div className="text-red-500 text-xs">{fieldErrors.phone}</div>}
         <label className="text-sm font-medium">Address</label>
         <input
           type="text"
@@ -136,6 +158,7 @@ export default function Register() {
           value={address}
           onChange={e => setAddress(e.target.value)}
         />
+        {fieldErrors.address && <div className="text-red-500 text-xs">{fieldErrors.address}</div>}
         <label className="text-sm font-medium">City</label>
         <input
           type="text"
@@ -145,6 +168,7 @@ export default function Register() {
           value={city}
           onChange={e => setCity(e.target.value)}
         />
+        {fieldErrors.city && <div className="text-red-500 text-xs">{fieldErrors.city}</div>}
         <label className="text-sm font-medium">Postal Code</label>
         <input
           type="text"
@@ -154,6 +178,7 @@ export default function Register() {
           value={postalCode}
           onChange={e => setPostalCode(e.target.value)}
         />
+        {fieldErrors.postalCode && <div className="text-red-500 text-xs">{fieldErrors.postalCode}</div>}
         <label className="text-sm font-medium">Country</label>
         <input
           type="text"
@@ -163,6 +188,7 @@ export default function Register() {
           value={country}
           onChange={e => setCountry(e.target.value)}
         />
+        {fieldErrors.country && <div className="text-red-500 text-xs">{fieldErrors.country}</div>}
         <label className="text-sm font-medium">Date of Birth</label>
         <input
           type="date"
@@ -171,6 +197,7 @@ export default function Register() {
           value={dateOfBirth}
           onChange={e => setDateOfBirth(e.target.value)}
         />
+        {fieldErrors.dateOfBirth && <div className="text-red-500 text-xs">{fieldErrors.dateOfBirth}</div>}
         <label className="text-sm font-medium">Gender</label>
         <select
           name="gender"
@@ -183,6 +210,7 @@ export default function Register() {
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
+        {fieldErrors.gender && <div className="text-red-500 text-xs">{fieldErrors.gender}</div>}
         <button
           type="submit"
           className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
@@ -190,7 +218,7 @@ export default function Register() {
         >
           {loading ? "Registering..." : "Register"}
         </button>
-        {error && <div className="text-red-500 text-sm">{error}</div>}
+        {formError && <div className="text-red-500 text-sm">{formError}</div>}
         {success && <div className="text-green-600 text-sm">Registration successful!</div>}
       </form>
       <div className="mt-4 text-xs text-gray-500">* Required fields</div>

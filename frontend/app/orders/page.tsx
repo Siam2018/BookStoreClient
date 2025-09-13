@@ -10,7 +10,7 @@ export default function Orders() {
   const router = useRouter();
 
   useEffect(() => {
-  axios.get(`${process.env.BACKEND_ORIGIN}/orders`, { withCredentials: true })
+  axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/orders`, { withCredentials: true })
       .then(res => {
         setOrders(res.data);
         setLoading(false);

@@ -13,7 +13,7 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchUser() {
       try {
-  const res = await axios.get(`${process.env.BACKEND_ORIGIN}/auth/me`, { withCredentials: true });
+  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/me`, { withCredentials: true });
         setUser(res.data);
       } catch {
         setUser(null);
@@ -24,7 +24,7 @@ export default function HomePage() {
   }, []);
 
   const handleLogout = async () => {
-  await axios.post(`${process.env.BACKEND_ORIGIN}/auth/logout`, {}, { withCredentials: true });
+  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/logout`, {}, { withCredentials: true });
     setUser(null);
   };
 

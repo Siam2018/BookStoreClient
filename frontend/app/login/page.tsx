@@ -24,7 +24,7 @@ function LoginForm() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${process.env.BACKEND_ORIGIN}/auth/login`,
+        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/login`,
         { identifier, password },
         { withCredentials: true }
       );
@@ -45,7 +45,10 @@ function LoginForm() {
 
   return (
     <main className="max-w-md mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-4">Login</h1>
+      <div className="flex flex-col items-center mb-4">
+        <img src="/logo.png" alt="Logo" className="w-22 h-22 mb-2" />
+        <h1 className="text-3xl font-bold">Login</h1>
+      </div>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           type="text"
