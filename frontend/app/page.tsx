@@ -56,12 +56,7 @@ export default function HomePage() {
       )}
       <ProductSection />
       <div className="w-full flex gap-4 justify-center mt-12 mb-8">
-        <a
-          href="/adminregister"
-          className="bg-[#67C090] text-white px-6 py-3 rounded hover:bg-green-700 text-lg"
-        >
-          Admin Registration
-        </a>
+    
         <a
           href="/adminlogin"
           className="bg-[#67C090] text-white px-6 py-3 rounded hover:bg-green-700 text-lg"

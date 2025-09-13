@@ -27,7 +27,7 @@ export class AuthController {
     }
     const loginResult = await this.authService.login(user);
     // Return token and role in response body
-    return { access_token: loginResult.access_token, role: loginResult.role };
+  return { access_token: loginResult.access_token, role: loginResult.role, token: loginResult.access_token };
   }
 
   @Public()
