@@ -1,7 +1,8 @@
-import { Controller, Get, Param, Post, UsePipes, ValidationPipe, Body, Put, Delete, Patch, UseInterceptors, UploadedFile, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, UsePipes, ValidationPipe, Body, Put, Delete, Patch, UseInterceptors, UploadedFile, Res, UseGuards, Req } from '@nestjs/common';
 import { OrderService } from './order.service';
 
 import { JwtAuthGuard } from '../Auth/jwtAuth.guard';
+import { Public } from '../Auth/public.decorator';
 import { OrderDto } from './order.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterError, diskStorage } from 'multer';
@@ -11,14 +12,19 @@ import { MulterError, diskStorage } from 'multer';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll() {
-    return await this.orderService.findAll();
-}
+  async findAll(@Body() body: any, @Param() params: any, @Req() req: any) {
+    // Get customerId from JWT payload
+    const customerId = req.user?.id || req.user?.customerId;
+    return await this.orderService.findAll(customerId);
+  }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.orderService.findOne(+id);
+  async findOne(@Param('id') id: string, @Req() req: any) {
+    const customerId = req.user?.id || req.user?.customerId;
+    return await this.orderService.findOne(+id, customerId);
   }
 
   @Post()

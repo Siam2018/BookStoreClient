@@ -1,4 +1,6 @@
-import { IsNumber, IsString, IsArray, IsDateString, IsOptional, IsPositive, IsNotEmpty } from 'class-validator';
+import { IsNumber, IsString, IsArray, IsDateString, IsOptional, IsPositive, IsNotEmpty, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { OrderItemDto } from '../OrderItem/orderItem.dto';
 
 export class OrderDto {
     @IsNumber()
@@ -10,8 +12,10 @@ export class OrderDto {
     customerId: number;
 
     @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => OrderItemDto)
     @IsOptional()
-    orderItems?: number[];
+    orderItems?: OrderItemDto[];
 
     @IsNumber({}, { message: 'Total must be a number' })
     @IsPositive({ message: 'Total must be a positive number' })

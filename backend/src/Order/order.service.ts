@@ -1,19 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { OrderDto } from './order.dto';
+import { OrderItemService } from '../OrderItem/orderItem.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(OrderEntity)
     private readonly orderRepository: Repository<OrderEntity>,
+    @Inject(forwardRef(() => OrderItemService))
+    public readonly orderItemService: OrderItemService,
   ) {}
 
-  async findAll(): Promise<OrderEntity[]> {
+  async findAll(customerId?: number): Promise<OrderEntity[]> {
     try {
-      return await this.orderRepository.find({ relations: ['orderItems', 'customer'] });
+      if (!customerId) throw new UnauthorizedException('Customer ID required');
+      return await this.orderRepository.find({ where: { customerId }, relations: ['orderItems', 'customer'] });
     } catch (error) {
       throw new (error.constructor || require('@nestjs/common').HttpException)(
         error.message || 'Failed to get all orders',
@@ -22,9 +26,10 @@ export class OrderService {
     }
   }
 
-  async findOne(id: number): Promise<OrderEntity> {
+  async findOne(id: number, customerId?: number): Promise<OrderEntity> {
     try {
-      const order = await this.orderRepository.findOne({ where: { id }, relations: ['orderItems', 'customer'] });
+      if (!customerId) throw new UnauthorizedException('Customer ID required');
+      const order = await this.orderRepository.findOne({ where: { id, customerId }, relations: ['orderItems', 'customer'] });
       if (!order) throw new NotFoundException('Order not found');
       return order;
     } catch (error) {
@@ -38,18 +43,33 @@ export class OrderService {
 
   async create(dto: OrderDto): Promise<OrderEntity> {
     try {
-      // Only assign fields compatible with OrderEntity
-      const { customerId, status } = dto;
+      const { customerId, status, orderItems } = dto;
+      // Check stock for all items before creating order
+      if (orderItems && Array.isArray(orderItems) && orderItems.length > 0) {
+        for (const item of orderItems) {
+          await this.orderItemService.checkProductStock(item.productId, item.quantity);
+        }
+      }
+      // Create order first
       const order = this.orderRepository.create({ customerId, status, total: 0 });
-      // Save first to get an order ID
       const savedOrder = await this.orderRepository.save(order);
-      // Calculate total (should be 0 at creation)
+      // If orderItems are present, create them and associate with order
+      if (orderItems && Array.isArray(orderItems) && orderItems.length > 0) {
+        const itemsWithOrderId = orderItems.map(item => ({ ...item, orderId: savedOrder.id }));
+        if (this['orderItemService']) {
+          await this['orderItemService'].createMany(itemsWithOrderId);
+        } else {
+          throw new Error('OrderItemService not injected');
+        }
+      }
+      // Recalculate total
       savedOrder.total = await this.calculateOrderTotal(savedOrder.id);
       return this.orderRepository.save(savedOrder);
     } catch (error) {
-      throw new (error.constructor || require('@nestjs/common').HttpException)(
+      // Return a clear error message for out-of-stock or other issues
+      throw new (error.constructor || require('@nestjs/common').BadRequestException)(
         error.message || 'Failed to create order',
-        error.status || 500
+        error.status || 400
       );
     }
   }
