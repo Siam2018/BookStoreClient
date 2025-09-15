@@ -3,8 +3,8 @@ import { IsNumber, IsOptional, IsPositive, Min, IsNotEmpty } from 'class-validat
 export class OrderItemDto {
   @IsNumber({}, { message: 'Order ID must be a number' })
   @IsPositive({ message: 'Order ID must be positive' })
-  @IsNotEmpty({ message: 'Order ID is required' })
-  orderId: number;
+  @IsOptional()
+  orderId?: number;
 
   @IsNumber({}, { message: 'Product ID must be a number' })
   @IsPositive({ message: 'Product ID must be positive' })
@@ -18,12 +18,12 @@ export class OrderItemDto {
 
   @IsNumber({}, { message: 'Price must be a number' })
   @IsPositive({ message: 'Price must be positive' })
-  @IsNotEmpty({ message: 'Price is required' })
-  price: number;
+  @IsOptional()
+  price?: number;
 
   @IsNumber({}, { message: 'Subtotal must be a number' })
   @IsPositive({ message: 'Subtotal must be positive' })
-  @IsNotEmpty({ message: 'Subtotal is required' })
-  subtotal: number;
+  @IsOptional()
+  subtotal?: number;
 }
 

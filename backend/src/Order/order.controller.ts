@@ -1,30 +1,46 @@
-import { Controller, Get, Param, Post, UsePipes, ValidationPipe, Body, Put, Delete, Patch, UseInterceptors, UploadedFile, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, UsePipes, ValidationPipe, Body, Put, Delete, Patch, UseInterceptors, UploadedFile, Res, UseGuards, Req } from '@nestjs/common';
+import { Roles, RolesGuard } from '../Auth/roles.guard';
 import { OrderService } from './order.service';
 
 import { JwtAuthGuard } from '../Auth/jwtAuth.guard';
+import { Public } from '../Auth/public.decorator';
 import { OrderDto } from './order.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterError, diskStorage } from 'multer';
+import { AuthGuard } from '@nestjs/passport';
 
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll() {
-    return await this.orderService.findAll();
-}
-
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.orderService.findOne(+id);
+  async findAll(@Body() body: any, @Param() params: any, @Req() req: any) {
+    // If admin, fetch all orders. Otherwise, filter by customerId
+    if (req.user?.role === 'admin') {
+      return await this.orderService.findAll();
+    }
+    const customerId = req.user?.id || req.user?.customerId;
+    return await this.orderService.findAll(customerId);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: string, @Req() req: any) {
+    const customerId = req.user?.id || req.user?.customerId;
+    return await this.orderService.findOne(+id, customerId);
+  }
+
+
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UsePipes(new ValidationPipe())
-  async create(@Body() dto: OrderDto) {
-    return await this.orderService.create(dto);
+  async create(@Body() dto: OrderDto, @Req() req: any) {
+    let customerId = req.user?.id ?? req.user?.customerId ?? req.user?.userId;
+    customerId = Number(customerId);
+    const orderPayload = { ...dto, customerId };
+    return await this.orderService.create(orderPayload);
   }
 
   @Put(':id')
