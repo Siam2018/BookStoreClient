@@ -21,9 +21,10 @@ export default function HomePage() {
     setLoading(false);
   }, []);
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000";
   const handleLogout = async () => {
     const token = localStorage.getItem("token");
-    await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/logout`, {}, {
+    await axios.post(`${baseUrl}/auth/logout`, {}, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     localStorage.removeItem("token");

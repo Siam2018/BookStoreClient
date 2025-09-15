@@ -13,6 +13,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000";
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -24,7 +25,7 @@ function LoginForm() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/login`,
+        `${baseUrl}/auth/login`,
         { identifier, password }
       );
       // Store token and user info in localStorage
