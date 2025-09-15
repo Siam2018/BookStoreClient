@@ -53,7 +53,7 @@ export default function AdminRegisterPage() {
     }
     setLoading(true);
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:4000";
+      const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000";
       const response = await axios.post(`${baseUrl}/admin/create`, form);
       console.log(response);
       setSuccess(true);

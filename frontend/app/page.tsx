@@ -21,9 +21,10 @@ export default function HomePage() {
     setLoading(false);
   }, []);
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000";
   const handleLogout = async () => {
     const token = localStorage.getItem("token");
-    await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/logout`, {}, {
+    await axios.post(`${baseUrl}/auth/logout`, {}, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     localStorage.removeItem("token");
@@ -42,7 +43,7 @@ export default function HomePage() {
           href="/adminlogin"
           className="bg-[#67C090] text-white px-6 py-3 rounded hover:bg-green-700 text-lg w-full sm:w-auto text-center"
         >
-          Admin Login
+          Manage
         </a>
       </div>
       <Footer />

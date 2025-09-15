@@ -14,7 +14,7 @@ export default function AdminLoginPage() {
     setError("");
     setLoading(true);
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:4000";
+      const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000";
       const res = await fetch(`${baseUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -24,8 +24,11 @@ export default function AdminLoginPage() {
         setError("Invalid username or password");
       } else {
         const data = await res.json();
+       
         localStorage.setItem("isAdminLoggedIn", "true");
-        localStorage.setItem("jwtToken", data.token);
+        localStorage.setItem("jwtToken", data.access_token);
+        localStorage.setItem("adminRole", data.role);
+        localStorage.setItem("adminUser", JSON.stringify(data.user));
         router.push("/manage");
       }
     } catch {

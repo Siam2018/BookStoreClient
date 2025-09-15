@@ -36,6 +36,7 @@ export class AdminController {
         return this.adminService.createAdmin(dto);
     }
 
+    
     @Get()
     //@UseGuards(JwtAuthGuard, RolesGuard)
     //@Roles('admin')
@@ -46,6 +47,7 @@ export class AdminController {
         return this.adminService.getAllAdmins();
     }
 
+    @Public()
     @Get('username/:username')
    //@UseGuards(JwtAuthGuard, RolesGuard)
     //@Roles('admin')

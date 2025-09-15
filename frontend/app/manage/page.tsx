@@ -32,7 +32,7 @@ export default function ManagePage() {
 
   async function fetchAdmins() {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("jwtToken");
       const res = await axios.get<Admin[]>(`${baseUrl}/admin`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ export default function ManagePage() {
 
   async function handleDelete(id: string) {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("jwtToken");
       await axios.delete(`${baseUrl}/admin/${id}`,
         {
           headers: {
@@ -68,7 +68,12 @@ export default function ManagePage() {
   async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
-      await axios.put(`${baseUrl}/admin/${editId}`, editData);
+      const token = localStorage.getItem("jwtToken");
+      await axios.put(`${baseUrl}/admin/${editId}`, editData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setEditId(null);
       fetchAdmins();
     } catch (err) {
@@ -85,8 +90,6 @@ export default function ManagePage() {
         <div className="flex flex-row gap-4 w-full mb-2">
           <button className="flex-1 bg-[#67C090] text-white py-2 rounded" onClick={() => router.push("/adminregister")}>Register Admin</button>
           <button className="flex-1 bg-blue-500 text-white py-2 rounded" onClick={() => alert('View All clicked')}>View All</button>
-          <button className="flex-1 bg-yellow-500 text-white py-2 rounded" onClick={() => alert('Update clicked')}>Update</button>
-          <button className="flex-1 bg-red-500 text-white py-2 rounded" onClick={() => alert('Delete clicked')}>Delete</button>
         </div>
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         {/* ...existing code for admin list and management... */}
@@ -108,7 +111,7 @@ export default function ManagePage() {
                     <span className="font-semibold text-black">{admin.fullName}</span>
                     <span className="text-black">{admin.email}</span>
                     <span className="text-black">{admin.phone}</span>
-                    <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={() => router.push(`/admin/${admin.id}`)}>Edit</button>
+                                <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={() => router.push(`/editprofile/${admin.id}`)}>Edit</button>
                     <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDelete(admin.id)}>Delete</button>
                   </div>
                 )}
