@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -73,6 +72,11 @@ export default function ProductDetails() {
       <p className="text-green-600 font-bold text-2xl mb-2">${product.price}</p>
       <div className="flex items-center gap-4 mt-4">
         <label htmlFor="quantity" className="font-semibold text-gray-800">Quantity:</label>
+        <button
+          className="bg-gray-300 text-black px-2 rounded"
+          onClick={() => setQuantity(q => Math.max(1, q - 1))}
+          disabled={quantity <= 1}
+        >-</button>
         <input
           id="quantity"
           type="number"
@@ -80,8 +84,12 @@ export default function ProductDetails() {
           max={product.stock}
           value={quantity}
           onChange={e => setQuantity(Math.max(1, Math.min(product.stock, Number(e.target.value))))}
-          className="w-20 px-2 py-1 border rounded"
+          className="w-20 px-2 py-1 border rounded font-bold text-gray-800 bg-gray-100 text-center"
         />
+        <button
+          className="bg-gray-300 text-black px-2 rounded"
+          onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
+        >+</button>
         <button
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow"
           onClick={handleAddToCart}

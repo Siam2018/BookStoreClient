@@ -64,7 +64,47 @@ export default function Cart() {
           {cart.map((item, idx) => (
             <li key={idx} className="border p-4 rounded">
               <div>Product ID: {item.productId}</div>
-              <div>Quantity: {item.quantity}</div>
+              <div className="flex items-center gap-2 mt-2">
+                <span>Quantity:</span>
+                <button
+                  className="bg-gray-300 text-black px-2 rounded"
+                  onClick={() => {
+                    if (item.quantity === 1) {
+                      // Remove item if quantity is 1 and user clicks -
+                      const newCart = cart.filter((_, i) => i !== idx);
+                      setCart(newCart);
+                      localStorage.setItem("cart", JSON.stringify(newCart));
+                    } else {
+                      const newCart = cart.map((c, i) => i === idx ? { ...c, quantity: c.quantity - 1 } : c);
+                      setCart(newCart);
+                      localStorage.setItem("cart", JSON.stringify(newCart));
+                    }
+                  }}
+                  disabled={item.quantity <= 0}
+                >-</button>
+                <input
+                  type="text"
+                  value={item.quantity}
+                  readOnly
+                  className="w-12 text-center font-bold text-gray-800 border rounded bg-gray-100"
+                />
+                <button
+                  className="bg-gray-300 text-black px-2 rounded"
+                  onClick={() => {
+                    const newCart = cart.map((c, i) => i === idx ? { ...c, quantity: c.quantity + 1 } : c);
+                    setCart(newCart);
+                    localStorage.setItem("cart", JSON.stringify(newCart));
+                  }}
+                >+</button>
+                <button
+                  className="bg-red-500 text-white px-2 rounded ml-2"
+                  onClick={() => {
+                    const newCart = cart.filter((_, i) => i !== idx);
+                    setCart(newCart);
+                    localStorage.setItem("cart", JSON.stringify(newCart));
+                  }}
+                >Remove</button>
+              </div>
             </li>
           ))}
         </ul>

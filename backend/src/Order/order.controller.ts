@@ -17,6 +17,10 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Body() body: any, @Param() params: any, @Req() req: any) {
+    // If admin, fetch all orders. Otherwise, filter by customerId
+    if (req.user?.role === 'admin') {
+      return await this.orderService.findAll();
+    }
     const customerId = req.user?.id || req.user?.customerId;
     return await this.orderService.findAll(customerId);
   }
