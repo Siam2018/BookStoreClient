@@ -15,42 +15,25 @@ export class OrderService {
   ) {}
 
   async findAll(customerId?: number): Promise<OrderEntity[]> {
-    try {
-      if (!customerId) throw new UnauthorizedException('Customer ID required');
-      return await this.orderRepository.find({ where: { customerId }, relations: ['orderItems', 'customer'] });
-    } catch (error) {
-      throw new (error.constructor || require('@nestjs/common').HttpException)(
-        error.message || 'Failed to get all orders',
-        error.status || 500
-      );
-    }
+    return await this.orderRepository.find({ where: { customerId }, relations: ['orderItems', 'customer'] });
   }
 
   async findOne(id: number, customerId?: number): Promise<OrderEntity> {
-    try {
-      if (!customerId) throw new UnauthorizedException('Customer ID required');
-      const order = await this.orderRepository.findOne({ where: { id, customerId }, relations: ['orderItems', 'customer'] });
-      if (!order) throw new NotFoundException('Order not found');
-      return order;
-    } catch (error) {
-      throw new (error.constructor || require('@nestjs/common').HttpException)(
-        error.message || 'Failed to get order',
-        error.status || 500
-      );
-    }
+    const order = await this.orderRepository.findOne({ where: { id, customerId }, relations: ['orderItems', 'customer'] });
+    if (!order) throw new NotFoundException('Order not found');
+    return order;
   }
 
 
   async create(dto: OrderDto): Promise<OrderEntity> {
     try {
-      const { customerId, status, orderItems } = dto;
+      let { customerId, status, orderItems } = dto;
       // Check stock for all items before creating order
       if (orderItems && Array.isArray(orderItems) && orderItems.length > 0) {
         for (const item of orderItems) {
           await this.orderItemService.checkProductStock(item.productId, item.quantity);
         }
       }
-      // Create order first
       const order = this.orderRepository.create({ customerId, status, total: 0 });
       const savedOrder = await this.orderRepository.save(order);
       // If orderItems are present, create them and associate with order

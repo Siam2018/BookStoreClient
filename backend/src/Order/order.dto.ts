@@ -8,8 +8,8 @@ export class OrderDto {
     id?: number;
 
     @IsNumber({}, { message: 'Customer ID must be a number' })
-    @IsNotEmpty({ message: 'Customer ID is required' })
-    customerId: number;
+    @IsOptional()
+    customerId?: number;
 
     @IsArray()
     @ValidateNested({ each: true })

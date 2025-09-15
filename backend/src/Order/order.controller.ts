@@ -1,4 +1,5 @@
 import { Controller, Get, Param, Post, UsePipes, ValidationPipe, Body, Put, Delete, Patch, UseInterceptors, UploadedFile, Res, UseGuards, Req } from '@nestjs/common';
+import { Roles, RolesGuard } from '../Auth/roles.guard';
 import { OrderService } from './order.service';
 
 import { JwtAuthGuard } from '../Auth/jwtAuth.guard';
@@ -6,6 +7,7 @@ import { Public } from '../Auth/public.decorator';
 import { OrderDto } from './order.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterError, diskStorage } from 'multer';
+import { AuthGuard } from '@nestjs/passport';
 
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
@@ -15,7 +17,6 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Body() body: any, @Param() params: any, @Req() req: any) {
-    // Get customerId from JWT payload
     const customerId = req.user?.id || req.user?.customerId;
     return await this.orderService.findAll(customerId);
   }
@@ -27,10 +28,15 @@ export class OrderController {
     return await this.orderService.findOne(+id, customerId);
   }
 
+
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UsePipes(new ValidationPipe())
-  async create(@Body() dto: OrderDto) {
-    return await this.orderService.create(dto);
+  async create(@Body() dto: OrderDto, @Req() req: any) {
+    let customerId = req.user?.id ?? req.user?.customerId ?? req.user?.userId;
+    customerId = Number(customerId);
+    const orderPayload = { ...dto, customerId };
+    return await this.orderService.create(orderPayload);
   }
 
   @Put(':id')

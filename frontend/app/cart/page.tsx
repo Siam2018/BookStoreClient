@@ -24,18 +24,19 @@ export default function Cart() {
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
+      if (!token) throw new Error("No token found. Please login.");
       if (!user || !user.id) throw new Error("User not found. Please login.");
       if (!cart.length) throw new Error("Cart is empty.");
       const payload = {
-        customerId: user.id,
         status: "pending",
         orderItems: cart.map((item: CartItem) => ({ productId: item.productId, quantity: item.quantity })),
       };
-      await axios.post(
+      const authHeader = `Bearer ${token}`;
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/orders`,
         payload,
         {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: authHeader },
         }
       );
       localStorage.removeItem("cart");
@@ -43,7 +44,12 @@ export default function Cart() {
       setCheckoutSuccess(true);
       router.push("/orders");
     } catch (err: any) {
-      setCheckoutError(err?.response?.data?.message || err.message || "Checkout failed.");
+      const msg = err?.response?.data?.message;
+      setCheckoutError(
+        Array.isArray(msg)
+          ? msg.join(", ")
+          : msg || err.message || "Checkout failed."
+      );
     }
     setCheckoutLoading(false);
   };
