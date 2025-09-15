@@ -61,7 +61,7 @@ export default function ManagePage() {
     } else {
       router.push("/adminlogin");
     }
-    // eslint-disable-next-line
+    
   }, [router]);
 
   async function fetchAdmins() {
@@ -188,74 +188,24 @@ export default function ManagePage() {
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-[#DDF4E7] via-[#67C090] to-[#A7E9C7]">
-      {/* Navbar with notification button */}
-      <nav className="w-full flex items-center justify-between px-8 py-4 bg-white/80 shadow-md relative">
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-bold text-black">Admin Management</h1>
         </div>
         <div className="relative flex items-center gap-4">
           <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/adminregister")}>Register Admin</button>
-          <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => alert('clicked')}>Products</button>
+          <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/editproducts")}>Products</button>
           <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/orders")}>Order</button>
           <div
             className="relative"
             onMouseEnter={() => setShowNotifications(true)}
             onMouseLeave={() => setShowNotifications(false)}
           >
-            <button className="relative">
-              <span className="material-icons text-3xl text-black">notifications</span>
-              {pendingOrders > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 text-xs">
-                  {pendingOrders}
-                </span>
-              )}
-            </button>
-            {showNotifications && (
-              <div
-                className="absolute right-0 w-64 bg-white border border-gray-300 rounded shadow-lg z-50 p-2"
-                onMouseEnter={() => setShowNotifications(true)}
-                onMouseLeave={() => setShowNotifications(false)}
-              >
-                <h3 className="font-bold mb-2 text-black">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-[#67C090]">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                </h3>
-                {notifications.length === 0 ? (
-                  <div className="text-gray-500 text-sm">No notifications</div>
-                ) : (
-                  <ul className="max-h-48 overflow-y-auto">
-                    {notifications.map((notif, i) => (
-                      <li key={notif.orderId || i} className="mb-2 text-black text-sm flex flex-col">
-                        <button
-                          className="cursor-pointer underline text-blue-600 hover:text-blue-800 text-left"
-                          onClick={() => router.push(`/orders/${notif.orderId}`)}
-                        >{notif.message}</button>
-                        <span className="text-xs text-gray-500">{notif.timestamp}</span>
-                        <div className="flex gap-2 mt-1">
-                          <button
-                            className="bg-green-500 text-white px-2 py-1 rounded text-xs"
-                            onClick={() => handleAcceptOrder(notif)}
-                          >Accept</button>
-                          <button
-                            className="bg-red-500 text-white px-2 py-1 rounded text-xs"
-                            onClick={() => handleRejectOrder(notif)}
-                          >Reject</button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </div>
+
         </div>
       </nav>
       <div className="flex flex-col items-center justify-center flex-1 w-full">
         <div className="space-y-4 w-full max-w-xl flex flex-col items-center">
           {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
-          {/* ...existing code for admin list and management... */}
-          <div className="bg-white/60 backdrop-blur-lg p-6 rounded-xl shadow-lg mb-8">
             <h2 className="text-xl font-semibold mb-4 text-black">Manage Existing Admins</h2>
             <ul className="space-y-2">
               {admins.map(admin => (

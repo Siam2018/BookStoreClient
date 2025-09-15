@@ -42,7 +42,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, submit
         <label className="block text-gray-700">Name</label>
         <input
           type="text"
-          className="border rounded w-full p-2"
+          className="border rounded w-full p-2 text-black"
           value={name}
           onChange={e => setName(e.target.value)}
         />
@@ -52,7 +52,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, submit
         <label className="block text-gray-700">Price</label>
         <input
           type="number"
-          className="border rounded w-full p-2"
+          className="border rounded w-full p-2 text-black"
           value={price}
           onChange={e => setPrice(Number(e.target.value))}
         />
@@ -61,7 +61,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, submit
       <div className="mb-4">
         <label className="block text-gray-700">Description</label>
         <textarea
-          className="border rounded w-full p-2"
+          className="border rounded w-full p-2 text-black"
           value={description}
           onChange={e => setDescription(e.target.value)}
         />
@@ -71,7 +71,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, submit
         <label className="block text-gray-700">Image URL</label>
         <input
           type="text"
-          className="border rounded w-full p-2"
+          className="border rounded w-full p-2 text-black"
           value={imageURL}
           onChange={e => setImageURL(e.target.value)}
         />
