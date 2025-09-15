@@ -37,7 +37,7 @@ export default function ProductDetails() {
       if (existing) {
         existing.quantity += quantity;
       } else {
-        cart.push({ productId: product.id, quantity });
+        cart.push({ productId: product.id, quantity, price: product.price });
       }
       localStorage.setItem("cart", JSON.stringify(cart));
       setCartSuccess(true);

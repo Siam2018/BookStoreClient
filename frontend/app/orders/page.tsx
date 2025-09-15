@@ -17,9 +17,7 @@ export default function Orders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [checkoutError, setCheckoutError] = useState("");
-  const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  // Removed checkout state for orders page
 
   useEffect(() => {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -50,48 +48,12 @@ export default function Orders() {
   if (loading) return <main className="p-8">Loading...</main>;
   if (error) return <main className="p-8 text-red-500">{error}</main>;
 
-  const handleCheckout = async () => {
-    setCheckoutLoading(true);
-    setCheckoutError("");
-    setCheckoutSuccess(false);
-    try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
-      const cart = getCart();
-      if (!user || !user.id) throw new Error("User not found. Please login.");
-      if (!cart.length) throw new Error("Cart is empty.");
-      const payload = {
-        customerId: user.id,
-        status: "pending",
-        orderItems: cart.map((item: any) => ({ productId: item.productId, quantity: item.quantity })),
-      };
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/orders`,
-        payload,
-        {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
-      );
-      clearCart();
-      setCheckoutSuccess(true);
-    } catch (err: any) {
-      setCheckoutError(err?.response?.data?.message || err.message || "Checkout failed.");
-    }
-    setCheckoutLoading(false);
-  };
+  // Removed handleCheckout for orders page
 
   return (
     <main className="max-w-2xl mx-auto p-8">
       <h1 className="text-3xl font-bold mb-4">Your Orders</h1>
-      <button
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow mb-6"
-        onClick={handleCheckout}
-        disabled={checkoutLoading}
-      >
-        {checkoutLoading ? "Processing..." : "Checkout"}
-      </button>
-      {checkoutError && <div className="text-red-600 mb-4">{checkoutError}</div>}
-      {checkoutSuccess && <div className="text-green-600 mb-4">Order placed successfully!</div>}
+      {/* Checkout button and related messages removed from orders page */}
       {orders.length === 0 ? (
         <p>No orders found.</p>
       ) : (
