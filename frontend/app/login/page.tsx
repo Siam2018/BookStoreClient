@@ -27,13 +27,18 @@ function LoginForm() {
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth/login`,
         { identifier, password }
       );
-      // Store token in localStorage
+      // Store token and user info in localStorage
       if (res.data.access_token) {
         localStorage.setItem("token", res.data.access_token);
+        if (res.data.user) {
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+        }
       }
       setSuccess(true);
       setError("");
-      setTimeout(() => router.push("/"), 800);
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 800);
     } catch (err: any) {
       if (err.response?.status === 401) {
         setError("Invalid credentials. Please check your email/username and password.");
