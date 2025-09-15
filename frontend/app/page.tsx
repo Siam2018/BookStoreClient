@@ -61,7 +61,7 @@ export default function HomePage() {
           href="/adminlogin"
           className="bg-[#67C090] text-white px-6 py-3 rounded hover:bg-green-700 text-lg"
         >
-          Admin Login
+          Manage
         </a>
       </div>
       <Footer />
