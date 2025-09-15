@@ -33,7 +33,6 @@ export class AdminController {
     //@Roles('admin')
     @UsePipes(new ValidationPipe())
     async create(@Body() dto: AdminDto) {
-        console.log("Creating admin with data:", dto);
         return this.adminService.createAdmin(dto);
     }
 

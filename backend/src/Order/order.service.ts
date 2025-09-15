@@ -1,55 +1,83 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { OrderDto } from './order.dto';
+import { OrderItemService } from '../OrderItem/orderItem.service';
+
+const Pusher = require('pusher');
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID as string,
+  key: process.env.PUSHER_KEY as string,
+  secret: process.env.PUSHER_SECRET as string,
+  cluster: process.env.PUSHER_CLUSTER as string,
+  useTLS: true,
+});
 
 @Injectable()
 export class OrderService {
+  private pusher: any;
   constructor(
     @InjectRepository(OrderEntity)
     private readonly orderRepository: Repository<OrderEntity>,
-  ) {}
-
-  async findAll(): Promise<OrderEntity[]> {
-    try {
-      return await this.orderRepository.find({ relations: ['orderItems', 'customer'] });
-    } catch (error) {
-      throw new (error.constructor || require('@nestjs/common').HttpException)(
-        error.message || 'Failed to get all orders',
-        error.status || 500
-      );
-    }
+    @Inject(forwardRef(() => OrderItemService))
+    public readonly orderItemService: OrderItemService,
+    private readonly configService: ConfigService,
+  ) {
+    const Pusher = require('pusher');
+    this.pusher = new Pusher({
+      appId: this.configService.get<string>('PUSHER_APP_ID'),
+      key: this.configService.get<string>('PUSHER_KEY'),
+      secret: this.configService.get<string>('PUSHER_SECRET'),
+      cluster: this.configService.get<string>('PUSHER_CLUSTER'),
+      useTLS: true,
+    });
   }
 
-  async findOne(id: number): Promise<OrderEntity> {
-    try {
-      const order = await this.orderRepository.findOne({ where: { id }, relations: ['orderItems', 'customer'] });
-      if (!order) throw new NotFoundException('Order not found');
-      return order;
-    } catch (error) {
-      throw new (error.constructor || require('@nestjs/common').HttpException)(
-        error.message || 'Failed to get order',
-        error.status || 500
-      );
-    }
+  async findAll(customerId?: number): Promise<OrderEntity[]> {
+    return await this.orderRepository.find({ where: { customerId }, relations: ['orderItems', 'customer'] });
   }
 
+  async findOne(id: number, customerId?: number): Promise<OrderEntity> {
+    const order = await this.orderRepository.findOne({ where: { id, customerId }, relations: ['orderItems', 'customer'] });
+    if (!order) throw new NotFoundException('Order not found');
+    return order;
+  }
 
   async create(dto: OrderDto): Promise<OrderEntity> {
     try {
-      // Only assign fields compatible with OrderEntity
-      const { customerId, status } = dto;
+  // ...existing code...
+      let { customerId, status, orderItems } = dto;
+      // Check stock for all items before creating order
+      if (orderItems && Array.isArray(orderItems) && orderItems.length > 0) {
+        for (const item of orderItems) {
+          await this.orderItemService.checkProductStock(item.productId, item.quantity);
+        }
+      }
       const order = this.orderRepository.create({ customerId, status, total: 0 });
-      // Save first to get an order ID
       const savedOrder = await this.orderRepository.save(order);
-      // Calculate total (should be 0 at creation)
+      // If orderItems are present, create them and associate with order
+      if (orderItems && Array.isArray(orderItems) && orderItems.length > 0) {
+        const itemsWithOrderId = orderItems.map(item => ({ ...item, orderId: savedOrder.id }));
+        if (this['orderItemService']) {
+          await this['orderItemService'].createMany(itemsWithOrderId);
+        } else {
+          throw new Error('OrderItemService not injected');
+        }
+      }
+      // Recalculate total
       savedOrder.total = await this.calculateOrderTotal(savedOrder.id);
+      // Trigger Pusher event if order is pending
+      if (savedOrder.status === 'pending') {
+        await this.pusher.trigger('orders', 'pending-order', { orderId: savedOrder.id });
+      }
       return this.orderRepository.save(savedOrder);
     } catch (error) {
-      throw new (error.constructor || require('@nestjs/common').HttpException)(
+      // Return a clear error message for out-of-stock or other issues
+      throw new (error.constructor || require('@nestjs/common').BadRequestException)(
         error.message || 'Failed to create order',
-        error.status || 500
+        error.status || 400
       );
     }
   }

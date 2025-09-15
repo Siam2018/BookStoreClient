@@ -63,14 +63,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   if (!user) return <main className="max-w-md mx-auto p-8 text-red-500">User not found.</main>;
 
   return (
-    <main className="max-w-md mx-auto p-8">
-      <div className="flex flex-col items-center mb-4">
+  <main className="max-w-md mx-auto p-8 bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-xl shadow-lg">
+  <div className="flex flex-col items-center mb-4 bg-white rounded-xl shadow p-6">
         <img
           src={form.imageURL ? `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/customer/uploads/customers/${form.imageURL}` : "/person.svg"}
           alt="Profile"
           className="w-24 h-24 rounded-full border mb-2"
         />
-        <h1 className="text-3xl font-bold">Profile</h1>
+  <h1 className="text-3xl font-bold text-blue-700 mb-2">Profile</h1>
         <input
           type="file"
           accept="image/*"
@@ -112,13 +112,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         />
         <button
           type="button"
-          className="bg-gray-500 text-white py-1 px-3 rounded hover:bg-gray-600 mb-2"
+          className="bg-gradient-to-r from-blue-500 to-green-400 text-white py-1 px-3 rounded hover:from-blue-600 hover:to-green-500 mb-2 shadow"
           onClick={() => document.getElementById('profile-image-input')?.click()}
         >
           Change Profile Picture
         </button>
       </div>
-      <form className="flex flex-col gap-4" onSubmit={async e => {
+  <form className="flex flex-col gap-4 bg-white rounded-xl shadow p-6" onSubmit={async e => {
           e.preventDefault();
           if (!editMode) return;
           setFieldErrors({});
@@ -197,26 +197,26 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             setFormError(err.response?.data?.message || "Update failed.");
           }
         }}>
-          <label className="text-sm font-medium">Full Name*</label>
-          <input type="text" className="border p-2 rounded" value={form.fullName || ""} onChange={e => setForm({ ...form, fullName: e.target.value })} disabled={!editMode} />
+          <label className="text-sm font-medium text-gray-800">Full Name*</label>
+          <input type="text" className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.fullName || ""} onChange={e => setForm({ ...form, fullName: e.target.value })} disabled={!editMode} />
           {fieldErrors.fullName && <div className="text-red-500 text-xs">{fieldErrors.fullName}</div>}
-          <label className="text-sm font-medium">Email*</label>
-          <input type="email" className="border p-2 rounded" value={form.email || ""} onChange={e => setForm({ ...form, email: e.target.value })} disabled={!editMode} />
+          <label className="text-sm font-medium text-gray-800">Email*</label>
+          <input type="email" className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.email || ""} onChange={e => setForm({ ...form, email: e.target.value })} disabled={!editMode} />
           {fieldErrors.email && <div className="text-red-500 text-xs">{fieldErrors.email}</div>}
-          <label className="text-sm font-medium">Phone</label>
-          <input type="tel" className="border p-2 rounded" value={form.phone || ""} onChange={e => setForm({ ...form, phone: e.target.value })} disabled={!editMode} />
-          <label className="text-sm font-medium">Address</label>
-          <input type="text" className="border p-2 rounded" value={form.address || ""} onChange={e => setForm({ ...form, address: e.target.value })} disabled={!editMode} />
-          <label className="text-sm font-medium">City</label>
-          <input type="text" className="border p-2 rounded" value={form.city || ""} onChange={e => setForm({ ...form, city: e.target.value })} disabled={!editMode} />
-          <label className="text-sm font-medium">Postal Code</label>
-          <input type="text" className="border p-2 rounded" value={form.postalCode || ""} onChange={e => setForm({ ...form, postalCode: e.target.value })} disabled={!editMode} />
-          <label className="text-sm font-medium">Country</label>
-          <input type="text" className="border p-2 rounded" value={form.country || ""} onChange={e => setForm({ ...form, country: e.target.value })} disabled={!editMode} />
-          <label className="text-sm font-medium">Date of Birth</label>
-          <input type="date" className="border p-2 rounded" value={form.dateOfBirth ? form.dateOfBirth.slice(0,10) : ""} onChange={e => setForm({ ...form, dateOfBirth: e.target.value })} disabled={!editMode} />
-          <label className="text-sm font-medium">Gender</label>
-          <select className="border p-2 rounded" value={form.gender || ""} onChange={e => setForm({ ...form, gender: e.target.value })} disabled={!editMode}>
+          <label className="text-sm font-medium text-gray-800">Phone</label>
+          <input type="tel" className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.phone || ""} onChange={e => setForm({ ...form, phone: e.target.value })} disabled={!editMode} />
+          <label className="text-sm font-medium text-gray-800">Address</label>
+          <input type="text" className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.address || ""} onChange={e => setForm({ ...form, address: e.target.value })} disabled={!editMode} />
+          <label className="text-sm font-medium text-gray-800">City</label>
+          <input type="text" className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.city || ""} onChange={e => setForm({ ...form, city: e.target.value })} disabled={!editMode} />
+          <label className="text-sm font-medium text-gray-800">Postal Code</label>
+          <input type="text" className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.postalCode || ""} onChange={e => setForm({ ...form, postalCode: e.target.value })} disabled={!editMode} />
+          <label className="text-sm font-medium text-gray-800">Country</label>
+          <input type="text" className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.country || ""} onChange={e => setForm({ ...form, country: e.target.value })} disabled={!editMode} />
+          <label className="text-sm font-medium text-gray-800">Date of Birth</label>
+          <input type="date" className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.dateOfBirth ? form.dateOfBirth.slice(0,10) : ""} onChange={e => setForm({ ...form, dateOfBirth: e.target.value })} disabled={!editMode} />
+          <label className="text-sm font-medium text-gray-800">Gender</label>
+          <select className="border p-2 rounded focus:ring-2 focus:ring-blue-400 text-gray-900" value={form.gender || ""} onChange={e => setForm({ ...form, gender: e.target.value })} disabled={!editMode}>
             <option value="">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>

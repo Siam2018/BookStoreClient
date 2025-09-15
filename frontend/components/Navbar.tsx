@@ -1,43 +1,79 @@
 "use client";
 import Link from "next/link";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-export default function Navbar({ user, loading, onLogout }: { user: any; loading: boolean; onLogout: () => void }) {
-  console.log('Navbar user.id:', user?.id);
-  console.log("Navbar user.id:", user?.id, "user.userId:", user?.userId);
+interface User {
+  id?: string;
+  userId?: string;
+  role?: string;
+  imageURL?: string;
+  fullName?: string;
+}
+
+interface NavbarProps {
+  user?: User;
+  loading?: boolean;
+  onLogout?: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ user, loading = false, onLogout }) => {
+  const [cartCount, setCartCount] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCartCount(cart.reduce((sum: number, item: any) => sum + item.quantity, 0));
+      window.addEventListener("storage", () => {
+        const updatedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+        setCartCount(updatedCart.reduce((sum: number, item: any) => sum + item.quantity, 0));
+      });
+    }
+  }, []);
   return (
-    <nav className="bg-blue-600 text-white p-2 flex justify-between items-center">
-      <div className="flex flex-row items-center gap-3">
-        <img src={"/logo.png"} alt="Logo" className="w-20 h-20 border bg-white rounded-2xl" />
-        <h1 className="text-2xl font-bold">BookStore</h1>
+    <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-black/70 text-white p-2 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+      <div className="flex flex-row items-center gap-3 justify-between w-full">
+        <div className="flex flex-row items-center gap-3">
+          <Link href="/" className="px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto text-center">Home</Link>
+          <img src={"/logo.png"} alt="Logo" className="w-16 h-16 sm:w-20 sm:h-20 border bg-white rounded-2xl" />
+          <h1 className="text-xl sm:text-2xl font-bold">BookStore</h1>
+        </div>
+        <button className="sm:hidden p-2" onClick={() => setMenuOpen(!menuOpen)}>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
       </div>
-      <div className="flex gap-6 items-center">
-        <Link href="/" className="px-4 py-2 rounded hover:bg-blue-700">Home</Link>
-        <Link href="/products" className="px-4 py-2 rounded hover:bg-blue-700">Products</Link>
-        <Link href="/about" className="px-4 py-2 rounded hover:bg-blue-700">About Us</Link>
-        <Link href="/orders" className="px-4 py-2 rounded hover:bg-blue-700">Orders</Link>
-
-      </div>
-      <div className="flex gap-4 items-center">
+      <div className={`flex-col sm:flex-row flex gap-6 items-center w-full sm:w-auto ${menuOpen ? 'flex' : 'hidden sm:flex'} justify-center`}>
+        <div className="flex gap-6 items-center justify-center w-full">
+          <Link href="/products" className="px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto text-center">Products</Link>
+          <Link href="/about" className="px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto text-center">About Us</Link>
+          <Link href="/orders" className="px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto text-center">Orders</Link>
+        </div>
         {loading ? (
           <span>Loading...</span>
         ) : !user ? (
           <>
-            <Link href="/login" className="px-4 py-2 rounded hover:bg-blue-700">Login</Link>
-            <Link href="/register" className="px-4 py-2 rounded hover:bg-blue-700">Register</Link>
+            <Link href="/login" className="px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto text-center">Login</Link>
+            <Link href="/register" className="px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto text-center">Register</Link>
           </>
         ) : (
           <>
-            <Link href="/orderItems" className="px-4 py-2 rounded hover:bg-blue-700">Cart</Link>
-            <span className="px-2 py-1 bg-gray-200 text-blue-700 rounded">Role: {user.role || "User"}</span>
-            <Link href={`/profile/${user.id || user.userId || ""}`} className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-700">
+            <Link href="/cart" className="relative px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto text-center flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-1">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 2.25l1.5 1.5m0 0l1.5 1.5m-1.5-1.5h15.75a.75.75 0 01.75.75v15a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V6.75m0 0L2.25 2.25m4.5 4.5h12.75" />
+              </svg>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 text-xs font-bold">{cartCount}</span>
+              )}
+            </Link>
+            <Link href={`/profile/${user.id || user.userId || ""}`} className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto text-center">
               <img src={user.imageURL ? `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/customer/uploads/customers/${user.imageURL}` : "/person.svg"} alt="Profile" className="w-8 h-8 rounded-full border" />
               <span>{user.fullName || "Profile"}</span>
             </Link>
-            <button onClick={onLogout} className="px-4 py-2 rounded bg-red-500 hover:bg-red-600">Logout</button>
+            <button onClick={onLogout} className="px-4 py-2 rounded bg-red-500 hover:bg-red-600 w-full sm:w-auto text-center">Logout</button>
           </>
         )}
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;

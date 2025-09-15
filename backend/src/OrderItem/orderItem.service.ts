@@ -17,8 +17,20 @@ export class OrderItemService {
     private readonly orderItemRepository: Repository<OrderItem>,
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
+    @Inject(forwardRef(() => OrderService))
     private readonly orderService: OrderService,
   ) {}
+
+  // Public method to check product stock
+  async checkProductStock(productId: number, quantity: number): Promise<void> {
+    const product = await this.productRepository.findOne({ where: { id: productId } });
+    if (!product) {
+      throw new NotFoundException(`Product with id ${productId} not found`);
+    }
+    if (product.stock < quantity) {
+      throw new NotFoundException(`Not enough stock for product ${product.name}`);
+    }
+  }
 
   async findAll(): Promise<OrderItem[]> {
     try {

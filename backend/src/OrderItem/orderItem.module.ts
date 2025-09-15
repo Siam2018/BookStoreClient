@@ -6,10 +6,11 @@ import { OrderItem } from './orderItem.entity';
 
 
 import { ProductEntity } from '../Products/product.entity';
+import { forwardRef } from '@nestjs/common';
 import { OrderModule } from '../Order/order.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OrderItem, ProductEntity]), OrderModule],
+  imports: [TypeOrmModule.forFeature([OrderItem, ProductEntity]), forwardRef(() => OrderModule)],
   controllers: [OrderItemController],
   providers: [OrderItemService],
   exports: [OrderItemService],

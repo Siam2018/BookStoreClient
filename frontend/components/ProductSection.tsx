@@ -86,16 +86,17 @@ export default function ProductSection() {
       <h3 className="text-2xl font-semibold mb-4">Products</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
         {products.map((product: any) => (
-          <div key={product.id} className="border rounded-lg p-4 shadow hover:shadow-lg transition flex flex-col">
+          <Link
+            key={product.id}
+            href={`/products/${product.id}`}
+            className="border rounded-lg p-4 shadow hover:shadow-lg transition flex flex-col cursor-pointer"
+          >
             <img src={product.imageURL || "/bookplaceholder.svg"} alt={product.name} className="w-full h-50 object-cover mb-2 rounded" />
             <h4 className="font-semibold text-lg mb-2">{product.name || product.title}</h4>
-            <p className="text-sm mb-2">{product.author}</p>
-            <p className="text-xs text-gray-500">{product.description}</p>
+            <p className="text-sm mb-2">Author: {product.author}</p>
             <p className="text-[#67C090] font-bold">${product.price}</p>
-            <div className="mt-2 flex gap-2">
-              <Link href={`/products/${product.id}`} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">View</Link>
-            </div>
-          </div>
+            <p className="text-xs text-green-600 mt-1">Stock: {product.stock}</p>
+          </Link>
         ))}
       </div>
     </section>
