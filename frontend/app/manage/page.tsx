@@ -195,7 +195,7 @@ export default function ManagePage() {
         </div>
         <div className="relative flex items-center gap-4">
           <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/adminregister")}>Register Admin</button>
-          <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => alert('clicked')}>Products</button>
+          <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/products")}>Products</button>
           <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/orders")}>Order</button>
           <div
             className="relative"
