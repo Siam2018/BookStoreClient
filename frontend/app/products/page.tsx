@@ -25,6 +25,7 @@ export default function Products() {
   const [error, setError] = useState("");
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [addMode, setAddMode] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:3000";
 
@@ -47,6 +48,23 @@ export default function Products() {
   }
 
   async function handleEditProduct(data: Product) {
+    if (addMode) {
+      // Add product
+      try {
+        const token = localStorage.getItem("jwtToken");
+        await axios.post(`${baseUrl}/products`, data, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        fetchProducts();
+        setShowForm(false);
+        setAddMode(false);
+        setEditProduct(null);
+      } catch {
+        setError("Failed to add product.");
+      }
+      return;
+    }
+    // Edit product
     if (!editProduct || !editProduct.id) return;
     try {
       const token = localStorage.getItem("jwtToken");
@@ -79,11 +97,19 @@ export default function Products() {
   return (
     <section className="w-full max-w-4xl mx-auto my-12">
       <h3 className="text-2xl font-semibold mb-4">Products</h3>
+      {isAdmin && (
+        <button
+          className="bg-green-500 text-white px-4 py-2 rounded mb-4"
+          onClick={() => { setShowForm(true); setAddMode(true); setEditProduct(null); }}
+        >
+          Add Product
+        </button>
+      )}
       {showForm && (
         <ProductForm
-          initialData={editProduct || undefined}
+          initialData={addMode ? undefined : editProduct || undefined}
           onSubmit={handleEditProduct}
-          submitLabel="Update Product"
+          submitLabel={addMode ? "Add Product" : "Update Product"}
         />
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
@@ -100,7 +126,7 @@ export default function Products() {
                 <>
                   <button
                     className="bg-yellow-500 text-white px-3 py-1 rounded"
-                    onClick={() => { setEditProduct(product); setShowForm(true); }}
+                    onClick={() => { setEditProduct(product); setShowForm(true); setAddMode(false); }}
                   >
                     Edit
                   </button>

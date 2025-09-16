@@ -40,7 +40,7 @@ export default function HomePage() {
       <div className="w-full flex gap-4 justify-center mt-12 mb-8">
     
         <a
-          href="/adminlogin"
+          href={typeof window !== "undefined" && localStorage.getItem("isAdminLoggedIn") === "true" ? "/manage" : "/adminlogin"}
           className="bg-[#67C090] text-white px-6 py-3 rounded hover:bg-green-700 text-lg w-full sm:w-auto text-center"
         >
           Manage
