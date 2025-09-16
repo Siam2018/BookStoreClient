@@ -26,7 +26,9 @@ export default function ManagePage() {
   async function fetchAllOrders() {
     try {
       const token = localStorage.getItem("jwtToken");
-      const res = await axios.get(`${baseUrl}/orders`, {
+      let url = `${baseUrl}/orders`;
+      // Always fetch all orders for admin
+      const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOrders(Array.isArray(res.data) ? res.data : []);
@@ -195,8 +197,15 @@ export default function ManagePage() {
         </div>
         <div className="relative flex items-center gap-4">
           <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/adminregister")}>Register Admin</button>
+
           <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/products")}>Products</button>
-          <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => router.push("/orders")}>Order</button>
+          <button className="bg-green-500 text-white py-2 px-4 rounded" onClick={() => {
+            if (localStorage.getItem("isAdminLoggedIn") === "true") {
+              router.push("/manage");
+            } else {
+              router.push("/orders");
+            }
+          }}>Order</button>
           <div
             className="relative"
             onMouseEnter={() => setShowNotifications(true)}

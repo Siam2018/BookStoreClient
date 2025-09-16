@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-type CartItem = { productId: number; quantity: number };
+type CartItem = { productId: number; quantity: number; price?: number };
 export default function Cart() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -64,6 +64,12 @@ export default function Cart() {
           {cart.map((item, idx) => (
             <li key={idx} className="border p-4 rounded">
               <div>Product ID: {item.productId}</div>
+              {item.price !== undefined && (
+                <div>Price: ${typeof item.price === 'number' ? item.price.toFixed(2) : Number(item.price || 0).toFixed(2)}</div>
+              )}
+              {item.price !== undefined && (
+                <div>Total: {typeof item.price === 'number' ? (item.price * item.quantity).toFixed(2) : (Number(item.price || 0) * item.quantity).toFixed(2)}</div>
+              )}
               <div className="flex items-center gap-2 mt-2">
                 <span>Quantity:</span>
                 <button
@@ -109,13 +115,15 @@ export default function Cart() {
           ))}
         </ul>
       )}
-      <button
-        className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow mb-4"
-        onClick={handleCheckout}
-        disabled={checkoutLoading || cart.length === 0}
-      >
-        {checkoutLoading ? "Processing..." : "Checkout"}
-      </button>
+      {cart.length > 0 && (
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow mb-4"
+          onClick={handleCheckout}
+          disabled={checkoutLoading}
+        >
+          {checkoutLoading ? "Processing..." : "Checkout"}
+        </button>
+      )}
       {checkoutError && <div className="text-red-600 mb-4">{checkoutError}</div>}
       {checkoutSuccess && <div className="text-green-600 mb-4">Order placed successfully!</div>}
     </main>
