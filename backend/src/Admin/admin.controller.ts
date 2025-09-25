@@ -12,8 +12,8 @@ import { Public } from 'src/Auth/public.decorator';
 export class AdminController {
    
     @Put('username/:username')
-   // @UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles('admin')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     async updateByUsername(@Param('username') username: string, @Body() updateData: Partial<AdminDto>) {
         try {
             return await this.adminService.updateByUsername(username, updateData);
@@ -29,8 +29,6 @@ export class AdminController {
 
     @Public()
     @Post('/create')
-    //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles('admin')
     @UsePipes(new ValidationPipe())
     async create(@Body() dto: AdminDto) {
         return this.adminService.createAdmin(dto);
@@ -38,8 +36,8 @@ export class AdminController {
 
     
     @Get()
-    //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles('admin')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     async findAll(@Query('fullName') fullName?: string) {
         if (fullName) {
             return this.adminService.findByFullNameSubstring(fullName);
@@ -64,16 +62,16 @@ export class AdminController {
     }
 
     @Delete('username/:username')
-    //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles('admin')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     async removeByUsername(@Param('username') username: string) {
         await this.adminService.deleteByUsername(username);
         return { message: 'Admin deleted by username' };
     }
 
     @Patch('username/:username/image')
-    //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles('admin')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     @UseInterceptors(FileInterceptor('file', {
         storage: diskStorage({
             destination: './uploads',
@@ -103,28 +101,30 @@ export class AdminController {
     }
 
     @Get(':id')
-    //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles('admin')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     async findOne(@Param('id') id: string) {
         return this.adminService.getAdminById(id);
     }
 
     @Put(':id')
-    //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles('admin')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     @UsePipes(new ValidationPipe())
     async update(@Param('id') id: string, @Body() updateData: Partial<AdminDto>) {
         return this.adminService.updateAdmin(id, updateData);
     }
 
     @Delete(':id')
-    //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles('admin')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     async remove(@Param('id') id: string) {
         await this.adminService.deleteAdmin(id);
         return { message: 'Admin deleted' };
     }
     @Post('upload')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     @UseInterceptors(FileInterceptor('file', {
         fileFilter: (req, file, cb) => {
             if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
@@ -146,6 +146,8 @@ export class AdminController {
     }
 
     @Get('getfile/:filename')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('administrator')
     getFile(@Param('filename') filename: string, @Res() res) {
         return res.sendFile(filename, { root: './uploads' });
     }

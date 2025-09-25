@@ -47,10 +47,12 @@ const Navbar: React.FC<NavbarProps> = ({ user, loading = false, onLogout }) => {
       <div className="flex flex-row gap-6 items-center justify-center flex-1">
         <Link href="/" className="px-4 py-2 rounded hover:bg-blue-700 text-center">Home</Link>
         <Link href="/products" className="px-4 py-2 rounded hover:bg-blue-700 text-center">Products</Link>
+        
         <Link href="/about" className="px-4 py-2 rounded hover:bg-blue-700 text-center">About Us</Link>
       </div>
-      {/* Right: Cart, Profile, Logout, Orders (only for logged in customer) */}
+      {/* Right: Cart, Profile, Logout, Orders (only for logged in customer), Admin Login */}
       <div className={`flex-col sm:flex-row flex gap-6 items-center sm:w-auto ${menuOpen ? 'flex' : 'hidden sm:flex'} justify-end`}>
+        <Link href="/administratorlogin" className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white font-bold text-center">Administrator Login</Link>
         {user?.role === 'admin' ? (
           <Link href="/manage" className="px-4 py-2 rounded hover:bg-blue-700 text-center">Orders</Link>
         ) : user ? (

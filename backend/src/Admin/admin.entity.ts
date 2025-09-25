@@ -8,7 +8,7 @@ export class AdminEntity {
     id: string;
 
     @Column({ type: 'varchar', length: 20, default: 'admin' })
-    role: string;
+    role: string; // 'admin' or 'administrator'. 'administrator' has full privileges (sudo)
 
     @Column({ type: 'varchar', length: 100, unique: true })
     username: string;

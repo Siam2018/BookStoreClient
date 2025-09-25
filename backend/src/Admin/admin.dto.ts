@@ -2,6 +2,10 @@ import { IsString, MinLength, MaxLength, IsNotEmpty, IsEmail, Matches, IsIn, IsO
 
 export class AdminDto {
     @IsString()
+    @IsIn(['admin', 'administrator'], { message: 'Role must be either admin or administrator' })
+    @IsOptional()
+    role?: string;
+    @IsString()
     @IsOptional()
     imageURL?: string;
 

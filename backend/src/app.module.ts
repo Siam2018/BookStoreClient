@@ -9,6 +9,7 @@ import { CustomerModule } from './Customer/customer.module';
 import { ProductModule } from './Products/product.module';
 import { OrderModule } from './Order/order.module';
 import { AdminModule } from './Admin/admin.module';
+import { AdministratorModule } from './Administrator/administrator.module';
 import { OrderItemModule } from './OrderItem/orderItem.module';
 import { AuthModule } from './Auth/auth.module';
 import { MailModule } from './Mail/mail.module';
@@ -34,7 +35,8 @@ import { JwtAuthGuard } from './Auth/jwtAuth.guard';
     CustomerModule,
     ProductModule, 
     OrderModule,
-    AdminModule,
+  AdminModule,
+  AdministratorModule,
   OrderItemModule,
   AuthModule,
   MailModule

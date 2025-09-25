@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import Footer from "../../components/Footer";
+import Footer from "../../../components/Footer";
 
 function LoginForm() {
   const router = useRouter();

@@ -175,8 +175,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               );
               imageURL = imgRes.data.imageURL || form.imageURL;
             }
-            // Now update profile data
-            // Remove password from payload
             const { password, ...safeForm } = form;
             const res = await axios.put(
               `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/customer/${userId}`,
